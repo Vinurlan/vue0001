@@ -1,6 +1,6 @@
 <template>
     <div class="message">
-        <h3>{{mesprop.name}}: </h3> <p>{{mesprop.message}}</p>
+        <h3><p class="badge badge-secondary">{{mesprop.name}}</p></h3> <p>{{mesprop.message}}</p>
     </div>
 </template>
 

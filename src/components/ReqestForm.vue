@@ -10,7 +10,7 @@
             :disabled="!formVisible"
             @click="switchPage"
             >Список</button>
-        <button class="close-madal" @click.prevent="close">Закрыть</button>
+        <button class="close-madal close" aria-label="Close" @click.prevent="close"><span aria-hidden="true">&times;</span></button>
 
         <form class="form-request" v-if="formVisible">
             <input v-model="inputValue.name" id="inputName" type="text" placeholder="Name*">

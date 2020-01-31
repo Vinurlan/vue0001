@@ -6,7 +6,7 @@
             <button @click="autoreload = !autoreload" disabled>
                 {{autoreload ? "ON" : "OFF"}}
             </button>
-            <button @click="getDataChat">Refresh</button>
+            <button class="btn btn-dark" @click="getDataChat">Refresh</button>
         </div>
         <div class="messages-block">
             <Message class="message-prop"
@@ -16,9 +16,9 @@
             ></Message>
         </div>
         <div class="input-block">
-            <label class="input-name">Name:<input id="inputName" type="text"></label>
-            <textarea class="input-message" name="inputMessage" id="inputMessage" maxlength="250"></textarea>
-            <button class="submit-message" @click="submitMessage">Enter</button>
+            <label class="input-name"><span class="badge badge-secondary">Name:</span><input class="form-control" id="inputName" type="text"></label>
+            <textarea class="input-message form-control" name="inputMessage" id="inputMessage" maxlength="250"></textarea>
+            <button class="submit-message btn-sm btn-dark" @click="submitMessage">Enter</button>
         </div>
     </div>
 </template>
@@ -107,7 +107,7 @@ h3 {
 
 .input-name {
     float: left;
-    margin: 45px 5px;
+    margin: 45px 0 45px 10px;
 }
 
 .input-message {
@@ -115,12 +115,14 @@ h3 {
     margin: 10px;
     resize: none;
     width: 440px;
-    height: 87px;
+    height: 130px;
 }
 
 .submit-message {
-    float: right;
-    margin: 45px 10px;
+    float: left;
+    margin: 10px 10px 10px 0;
+    font-size: 20pt;
+    padding: 43px 14px;
 }
 
 </style>
