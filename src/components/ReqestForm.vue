@@ -13,9 +13,9 @@
         <button class="close-madal" @click.prevent="close">Закрыть</button>
 
         <form class="form-request" v-if="formVisible">
-            <input v-model="inputValue.name" type="text" placeholder="Name*">
-            <input v-model="inputValue.number" type="number" placeholder="Phone*">
-            <input v-model="inputValue.comment" type="text" placeholder="Comment"> 
+            <input v-model="inputValue.name" id="inputName" type="text" placeholder="Name*">
+            <input v-model="inputValue.number" id="inputNumber" type="number" placeholder="Phone*">
+            <input v-model="inputValue.comment" id="inputComment" type="text" placeholder="Comment"> 
             <button @click.prevent="submitForm" :disabled="!valid">Отправить</button>     
         </form>
         <div class="list-request" v-if="!formVisible">
@@ -70,7 +70,7 @@ export default {
             })
                 .then(response => response.json);
             this.inputValue = {name: "", number: "", comment: ""};
-            close();
+            this.close();
         },
         onloadRequestList() {
             this.requestList = [];
