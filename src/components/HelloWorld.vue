@@ -22,6 +22,7 @@
     <button class="form-request" @click="openMadal">Request</button>
     <RequestForm v-if="visibleMadal" :close="closeMadal"></RequestForm> 
     <Chat class="chat-block"></Chat>
+    <MenuBar></MenuBar>
   </div>
 </template>
 
@@ -29,7 +30,7 @@
 <script>
 import RequestForm from "./ReqestForm.vue"
 import Chat from "./chat01/Chat.vue"
-
+import MenuBar from "./MenuBar.vue"
 
 export default {
   name: 'HelloWorld',
@@ -37,7 +38,7 @@ export default {
     msg: String
   },
   components: {
-    RequestForm, Chat
+    RequestForm, Chat, MenuBar,
   },
   data () {
     return {
