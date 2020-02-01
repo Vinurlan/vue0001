@@ -8,18 +8,19 @@
             <input class="input-todos" type="text" placeholder="What needs to be done?" @keyup.enter="addTodo">
             <div v-if="todosList.length">
                 <Todo
-                    v-for="(todo, index) of todosList"
+                    v-for="(todo, index) of visionList"
                     :key="index"
                     :index="index"
                     :prop="todo"
+                    @toggle="val => todo.done = val"
                     @ondelete="onDeleteTodo(index)"
                 ></Todo>
                 <div class="todos-footer">
                     <span class="length-list">{{todosList.length}} item left</span>
-                    <button class="button-footer">All</button>
-                    <button class="button-footer">Active</button>
-                    <button class="button-footer">Done</button>
-                    <button class="button-footer clear-all" @click="onClearDone">Clear Done</button>
+                    <button class="button-footer" @click="toAllList">All</button>
+                    <button class="button-footer" @click="toActiveList">Active</button>
+                    <button class="button-footer" @click="toDoneList">Done</button>
+                    <button class="button-footer clear-done" @click="onClearDone">Clear</button>
                 </div>
             </div>
         </div>
@@ -37,6 +38,7 @@ export default {
     data() {
         return {
             todosList: [],
+            visionList: [],
         }
     },
     methods: {
@@ -51,10 +53,28 @@ export default {
         onDeleteTodo(index) {
             this.todosList.splice(index, 1);
         },
+        toAllList() {
+            this.visionList = this.todosList;
+        },
+        toActiveList() {
+            this.visionList = this.todosList.filter((item) => item.done == false);
+        },
+        toDoneList() {
+            this.visionList = this.todosList.filter((item) => item.done == true);
+        },
         onClearDone() {
-            
+            this.toActiveList();
+            this.todosList = this.visionList;        
         }
     },
+    watch: {
+        todosList() {
+            
+        },
+    },
+    mounted() {
+        this.toAllList();
+    }
 }
 </script>
 
@@ -110,7 +130,7 @@ h2 {
     float: left;
 }
 
-.clear-all {
+.clear-done {
     float: right;
 }
 

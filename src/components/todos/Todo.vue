@@ -1,6 +1,6 @@
 <template>
     <div class="todo-prop">
-        <input class="check-box" type="checkbox" v-model="checked">
+        <input class="check-box" type="checkbox" :checked="prop.done" @change="() => $emit('toggle', !prop.done)">
         <span :id="idTodo" class="text-todo">{{prop.text}}</span>
         <button class="button-delete-todo" @click="onDelete">X</button>
     </div>
@@ -15,7 +15,6 @@ export default {
     },
     data() {
         return {
-            checked: false,
             id: this.index,
             idTodo: Math.floor(Math.random()*100000),
         }
@@ -28,18 +27,13 @@ export default {
     },
     watch: {
         checked: function(bul) {
-            this.prop.done = !this.prop.done;
-            let text = `#${this.idTodo}`;
 
             if (bul) {
-                this.$el.getElementById(`${this.idTodo}`).classList.add("text-todo-line");
+                this.$el.classList.add("text-todo-line");
             } else {
-                this.$el.getElementIdBy(text).classList.remove("text-todo-line");
+                this.$el.classList.remove("text-todo-line");
             }
         },
-        id() {
-            this.prop.id = this.index;
-        }
     },
     mounted() {
         this.prop.id = this.index
