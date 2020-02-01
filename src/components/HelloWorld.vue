@@ -23,6 +23,7 @@
     <RequestForm v-if="visibleMadal" :close="closeMadal"></RequestForm> 
     <Chat class="chat-block"></Chat>
     <MenuBar></MenuBar>
+    <Todos></Todos>
   </div>
 </template>
 
@@ -31,6 +32,7 @@
 import RequestForm from "./ReqestForm.vue"
 import Chat from "./chat01/Chat.vue"
 import MenuBar from "./MenuBar.vue"
+import Todos from "./todos/Todos.vue"
 
 export default {
   name: 'HelloWorld',
@@ -39,6 +41,7 @@ export default {
   },
   components: {
     RequestForm, Chat, MenuBar,
+    Todos,
   },
   data () {
     return {
