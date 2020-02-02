@@ -29,7 +29,7 @@
       "plugin:vue/essential",
       "eslint:recommended"
     ],
-    "rules": {"no-console": "off"},
+    "rules": {"no-console": "off", "no-useless-escape": "off"},
     "parserOptions": {
       "parser": "babel-eslint"
     }
