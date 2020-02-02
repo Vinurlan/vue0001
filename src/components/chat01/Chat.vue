@@ -60,11 +60,13 @@ export default {
         getDataChat() {
             fetch("https://basebackpack.firebaseio.com/data-chat.json")
                 .then(response => response.json())
-                .then(data => this.dataChat = Object.values(data));
+                .then(data => this.dataChat = Object.values(data))
+                .then(() => document.querySelector(".messages-block").scrollTo(0, document.querySelector(".messages-block").scrollHeight))
         },
         reloadDataChat() {
             this.getDataChat();
-            setTimeout(this.autoreload ? this.reloadDataChat() : null, 5000)
+            setTimeout(this.autoreload ? this.reloadDataChat() : false, 5000)
+            
         }
     }
 }
@@ -97,6 +99,7 @@ h3 {
     background-color: rgb(255, 255, 255);
     overflow: scroll;
     overflow-x: hidden; 
+    scroll-behavior: smooth;
 }
 
 .input-block {
