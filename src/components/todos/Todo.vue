@@ -1,7 +1,7 @@
 <template>
-    <div class="todo-prop">
+    <div class="todo-prop" :class="classesProp" @mouseenter="onEnterProp" @mouseleave="onLeaveProp">
         <input class="check-box" type="checkbox" :checked="prop.done" @change="() => $emit('toggle', !prop.done)">
-        <span :id="idTodo" class="text-todo">{{prop.text}}</span>
+        <span :id="idTodo" class="text-todo" :class="classesText">{{prop.text}}</span>
         <button class="button-delete-todo" @click="onDelete">X</button>
     </div>
 </template>
@@ -17,26 +17,42 @@ export default {
         return {
             id: this.index,
             idTodo: Math.floor(Math.random()*100000),
+            classesText: [],
+            classesProp: [],
+            checkEnter: false,
         }
     },
     methods: {
         onDelete() {
             this.checked = false;
             return this.$emit('ondelete')
+        },
+        onEnterProp(event) {
+            event.target.querySelector("button").classList.add("button-delete-todo-vision")
+        },
+        onLeaveProp(event) {
+            if (event.target.querySelector("button").classList.contains("button-delete-todo-vision")) {
+                event.target.querySelector("button").classList.remove("button-delete-todo-vision")
+            }
         }
     },
     watch: {
-        checked: function(bul) {
-
+        "prop.done": function(bul) {
             if (bul) {
-                this.$el.classList.add("text-todo-line");
+                if ( !this.classesText.includes("text-todo-line") ) {
+                    this.classesText.push("text-todo-line");
+                }
             } else {
-                this.$el.classList.remove("text-todo-line");
+                this.classesText.splice(this.classesText.find((item) => item == "text-todo-line"), 1)
             }
         },
     },
     mounted() {
-        this.prop.id = this.index
+        if (this.prop.done) {
+            if ( !this.classesText.includes("text-todo-line") ) {
+                    this.classesText.push("text-todo-line");
+                }
+        }
     }
 }
 </script>
@@ -78,13 +94,11 @@ export default {
     height: 30px;
     font-size: 12pt;
     border: none;
-    color: rgba(255, 0, 0, 0.274);
+    color: rgb(255, 255, 255);
 }
 
-
-.button-delete-todo:hover {
+.button-delete-todo-vision {
     color: red;
 }
-
 
 </style>

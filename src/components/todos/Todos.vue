@@ -2,11 +2,15 @@
     <div class="todos-block">
         <h2>todos</h2>
         <div class="main">
-            <button type="button" class=" btn btn-sm dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="sr-only">Toggle Dropdown</span>
-            </button>
-            <input class="input-todos" type="text" placeholder="What needs to be done?" @keyup.enter="addTodo">
-            <div v-if="todosList.length">
+            <div class="main-input">
+                <div class="btn-group button-split" :class="visionListToggle ? 'dropdown' : 'dropright'">
+                    <button type="button" class="btn btn-sm dropdown-toggle dropdown-toggle-split" @click="splitTodos">
+                        <span class="sr-only">Toggle Dropright</span>
+                    </button>
+                </div>
+                <input class="input-todos" type="text" placeholder="What needs to be done?" @keyup.enter="addTodo">
+            </div>
+            <div v-show="visionListToggle">
                 <Todo
                     v-for="(todo, index) of visionList"
                     :key="index"
@@ -39,6 +43,7 @@ export default {
         return {
             todosList: [],
             visionList: [],
+            visionListToggle: false,
         }
     },
     methods: {
@@ -49,6 +54,7 @@ export default {
                 id: null,
             });
             event.target.value = "";
+            this.visionListToggle = true;
         },
         onDeleteTodo(index) {
             this.todosList.splice(index, 1);
@@ -65,12 +71,15 @@ export default {
         onClearDone() {
             this.toActiveList();
             this.todosList = this.visionList;        
+        },
+        splitTodos() {
+            if (this.visionList.length) {
+                this.visionListToggle = !this.visionListToggle;
+            }
         }
     },
     watch: {
-        todosList() {
-            
-        },
+        
     },
     mounted() {
         this.toAllList();
@@ -95,6 +104,11 @@ h2 {
     background-color: #fff;
     margin: 5px auto;
     width: 250px;
+}
+
+.main-input {
+    display: grid;
+    grid-template-columns: 1fr 6fr;
 }
 
 .input-todos {
