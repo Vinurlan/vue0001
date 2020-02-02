@@ -2,11 +2,15 @@
     <div class="chat-block">
         <h3>MESSAGER</h3>
         <div class="status-block">
-            autorefresh
-            <button @click="autoreload = !autoreload">
-                {{autoreload ? "ON" : "OFF"}}
-            </button>
-            <button class="btn btn-dark" @click="getDataChat">Refresh</button>
+            <div class="buttons-load-data">
+                <span class="autoload-block badge badge-dark">              
+                    Auto: 
+                    <button class="button-toggle-autoload btn" :class="!autoreload ? 'btn-outline-danger' : 'btn-outline-success'" @click="autoreload = !autoreload">
+                        {{ autoreload ? "ON" : "OFF" }}                  
+                    </button>
+                </span> 
+                <button class="button-refresh btn btn-dark" @click="getDataChat">Refresh</button>
+            </div>
         </div>
         <div class="messages-block">
             <Message class="message-prop"
@@ -16,8 +20,13 @@
             ></Message>
         </div>
         <div class="input-block">
-            <label class="input-name"><span class="badge badge-secondary">Name:</span><input class="form-control" id="inputName" type="text"></label>
-            <textarea class="input-message form-control" name="inputMessage" id="inputMessage" maxlength="250"></textarea>
+            <label class="input-name">
+                <span class="badge badge-secondary">Name:</span>
+                <input class="form-control" id="inputName" type="text" maxlength="8" @keydown.enter.prevent="focusOnTArea">
+            </label>
+            <textarea class="input-message form-control" ref="textarea" name="inputMessage" id="inputMessage" maxlength="250"             
+                @keydown.ctrl.enter="submitMessage"
+            ></textarea>
             <button class="submit-message btn-sm btn-dark" @click="submitMessage">Enter</button>
         </div>
     </div>
@@ -44,8 +53,22 @@ export default {
                 name: document.getElementById("inputName").value,
                 message: document.getElementById("inputMessage").value,
             };
+            
+            // Валидация
+            if (!dataMessage.name.trim()) {
+                document.getElementById("inputName").classList.add("invalidInput");
+                return 0;
+            } else {
+                document.getElementById("inputName").classList.remove("invalidInput")
+            }
 
-            document.getElementById("inputName").value = "";
+            if (!dataMessage.message.trim()) {
+                document.getElementById("inputMessage").classList.add("invalidInput")
+                return 0;
+            } else {
+                document.getElementById("inputMessage").classList.remove("invalidInput")
+            }
+
             document.getElementById("inputMessage").value = "";
 
             fetch("https://basebackpack.firebaseio.com/data-chat.json", {
@@ -56,7 +79,7 @@ export default {
                 body: JSON.stringify(dataMessage)
             })
                 .then(response => response.json())
-                .then(() => setTimeout(this.reloadDataChat()), 3000)
+                .then(() => setTimeout(this.getDataChat()), 3000)
         },
         getDataChat() {
             fetch("https://basebackpack.firebaseio.com/data-chat.json")
@@ -65,19 +88,23 @@ export default {
                 .catch(data => this.dataChat = Object.values(data))
                 .then(() => document.querySelector(".messages-block").scrollTo(0, document.querySelector(".messages-block").scrollHeight));
         },
-        reloadDataChat() {
-            
-            this.reloadIntervalFunc = setInterval(this.getDataChat(), 5000);
-                    
-        }
+        focusOnTArea() {
+            this.$refs.textarea.focus();
+        },
+        switchAutoReload() {
+            new Promise(() => {this.getDataChat()})
+                .then(() => {
+                    if (this.dataChat.length && this.autoreload) {
+                        this.reloadIntervalFunc = setInterval(() => this.getDataChat(), 2000);
+                    } else {                      
+                        clearInterval(this.reloadIntervalFunc);
+                    }       
+            })
+        },
     },
     watch: {
         autoreload() {
-            if (this.autoreload) {
-                this.reloadIntervalFunc = setInterval(() => this.getDataChat(), 2000);
-            } else {
-                clearInterval(this.reloadIntervalFunc);
-            }
+            this.switchAutoReload();
         }
     }
 }
@@ -88,7 +115,8 @@ export default {
 .chat-block {
     margin: 50px auto;
     background-color: rgb(236, 236, 236);
-    border: 1px solid #000;
+    border: 4px solid #000;
+    border-radius: 5px;
     width: 800px;
     height: 400px;
     display: grid;
@@ -104,7 +132,36 @@ h3 {
     background-color: rgb(209, 207, 207);
     width: 100%;
     border-bottom: 1px solid #000;
+    border-radius: 0 0 10px 0px;
+    padding: 2px 0;
 }
+
+.buttons-load-data {
+    float: right;
+    height: 100%;
+    margin: auto 10px;
+    padding: 0;
+}
+
+.autoload-block {
+    font-size: 10pt;
+    height: 100%;
+    padding: auto;
+    margin:  auto 2px;
+    float: left;
+}
+
+.button-toggle-autoload {
+    height: 100%;
+    font-size: 10pt;
+    padding: 5px 10px;
+    margin: auto;
+}
+
+.button-refresh {
+    height: 100%;
+}
+
 
 .messages-block {
     background-color: rgb(255, 255, 255);
@@ -116,7 +173,8 @@ h3 {
 .input-block {
     background-color: rgb(209, 207, 207);
     width: 100%;
-
+    border-top: 1px solid #000;
+    border-radius: 0 10px 0 0;
 }
 
 .input-name {
@@ -136,7 +194,13 @@ h3 {
     float: left;
     margin: 10px 10px 10px 0;
     font-size: 20pt;
-    padding: 43px 14px;
+    padding: 43px 11px;
 }
+
+.invalidInput {
+    border: 1px outset rgba(255, 0, 0, 0.445);
+}
+
+
 
 </style>
