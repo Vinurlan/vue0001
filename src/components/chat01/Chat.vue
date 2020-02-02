@@ -3,7 +3,7 @@
         <h3>MESSAGER</h3>
         <div class="status-block">
             autorefresh
-            <button @click="autoreload = !autoreload" disabled>
+            <button @click="autoreload = !autoreload">
                 {{autoreload ? "ON" : "OFF"}}
             </button>
             <button class="btn btn-dark" @click="getDataChat">Refresh</button>
@@ -34,7 +34,8 @@ export default {
     data() {
         return {
             dataChat: [],
-            autoreload: false
+            autoreload: false,
+            reloadIntervalFunc: Function,
         }
     },
     methods: {
@@ -60,13 +61,23 @@ export default {
         getDataChat() {
             fetch("https://basebackpack.firebaseio.com/data-chat.json")
                 .then(response => response.json())
-                .then(data => this.dataChat = Object.values(data))
-                .then(() => document.querySelector(".messages-block").scrollTo(0, document.querySelector(".messages-block").scrollHeight))
+                .then(data => Object.values(data).length ? this.dataChat = Object.values(data) : data)
+                .catch(data => this.dataChat = Object.values(data))
+                .then(() => document.querySelector(".messages-block").scrollTo(0, document.querySelector(".messages-block").scrollHeight));
         },
         reloadDataChat() {
-            this.getDataChat();
-            setTimeout(this.autoreload ? this.reloadDataChat() : false, 5000)
             
+            this.reloadIntervalFunc = setInterval(this.getDataChat(), 5000);
+                    
+        }
+    },
+    watch: {
+        autoreload() {
+            if (this.autoreload) {
+                this.reloadIntervalFunc = setInterval(() => this.getDataChat(), 2000);
+            } else {
+                clearInterval(this.reloadIntervalFunc);
+            }
         }
     }
 }
