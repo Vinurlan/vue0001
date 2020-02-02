@@ -1,7 +1,8 @@
 <template>
     <div class="">
         <div class="menu-bar navbar">
-            <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#exampleModalCenter">Login</button>
+            <button v-if="!login" type="button" class="btn btn-dark" data-toggle="modal" data-target="#exampleModalCenter">Login</button>
+            <button v-if="login" type="button" class="btn btn-dark" @click="() => onLogOut()">LogOut</button>
         </div>
 
         <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -53,7 +54,8 @@ export default {
            inValidator: {
                emailInp: false,
                passwordInp: false,
-           }
+           },
+           login: false,
         }
     },
     watch: {
@@ -84,9 +86,13 @@ export default {
             }
 
             this.authWEmailAPassord(email, password)
-                // .then(token => {
-
-                // })
+                .then(token => {
+                        let date = new Date(Date.now() + 86400e3);
+                        //document.cookie =  `idToken=${encodeURIComponent(token)}; path=/; expires=${date}`
+                        
+                        this.setCookie("idToken", token, {expires: date});
+                    })
+                .then(() => window.location.reload());
         },
         authWEmailAPassord(email, password) {
             const apiKey = 'AIzaSyDTCjDnPrZ8Rdj5XAAWVrlxzvM0yCn_XOI';
@@ -101,7 +107,8 @@ export default {
                 }
             })
                 .then(response => response.json())
-                .then(data => data.idToken);
+                .then(data => data.idToken)
+                
         },
         isValid(event) {
             const target = event.target;
@@ -115,9 +122,53 @@ export default {
                     //target.classList.remove("no-valid")
                 }
             }
+        },
+        onLogOut() {
+            this.deleteCookie('idToken');
+            location.reload();
+        },
+        getCookie(name) {
+            let matches = document.cookie.match(new RegExp(
+                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+            ));
+            return matches ? decodeURIComponent(matches[1]) : undefined;
+        },
+        setCookie(name, value, options = {}) {
+            options = {
+                path: '/',
+
+                ...options
+            };
+
+            if (options.expires.toUTCString) {
+                options.expires = options.expires.toUTCString();
+            }
+
+            let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+
+            for (let optionKey in options) {
+                updatedCookie += "; " + optionKey;
+                let optionValue = options[optionKey];
+                if (optionValue !== true) {
+                updatedCookie += "=" + optionValue;
+                }
+            }
+
+            document.cookie = updatedCookie;
+        },
+        deleteCookie(name) {
+            this.setCookie(name, "", {
+                path: '/',
+                expires: 0,
+                'max-age': -1,
+            })
+        }        
+    },
+    mounted() {
+        if (this.getCookie("idToken")) {
+            this.login = true;
         }
-    }
-    
+    }    
 }
 </script>
 
