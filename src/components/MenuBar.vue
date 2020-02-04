@@ -1,13 +1,14 @@
 <template>
     <div class="">
         <div class="menu-bar navbar">
-            <button v-if="!login" type="button" class="btn btn-dark" data-toggle="modal" data-target="#exampleModalCenter">Login</button>
+            <button v-if="!login" @click="() => inUp = true" type="button" class="btn btn-dark" data-toggle="modal" data-target="#exampleModalCenter">Login</button>
+            <button v-if="!login" @click="() => inUp = false" type="button" class="btn btn-dark" data-toggle="modal" data-target="#exampleModalCenter">Sign up</button>
             <button v-if="login" type="button" class="btn btn-dark" @click="() => onLogOut()">LogOut</button>
         </div>
 
         <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
+                <div v-if="inUp" class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalCenterTitle">Authentication</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -28,7 +29,7 @@
                                     class="form-control" 
                                     id="inputPassword" 
                                     @blur="isValid"
-                                    @keyup.space.prevent=""
+                                    @keydown.space.prevent=""
                                     >
                             </div>
                             <!-- <div class="form-group form-check">
@@ -36,6 +37,48 @@
                                 <label class="form-check-label" for="exampleCheck">Check me out</label>
                             </div> -->
                             <button id="inputSubmit" type="submit" class="btn btn-primary">Login</button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+                <div v-if="!inUp" class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalCenterTitle">Registration</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form @submit.prevent="authSignUp">
+                            <div class="form-group">
+                                <label for="inputEmail">Email address</label>
+                                <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" @blur="isValid">
+                                <small :is="!isValid" id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPassword">Password</label>
+                                <input 
+                                    type="password" 
+                                    class="form-control" 
+                                    id="inputPassword" 
+                                    @blur="isValid"
+                                    @keydown.space.prevent=""
+                                    >
+                                <label for="inputPasswordConf" class="label-conf">Confirm password</label>
+                                <input 
+                                    type="password" 
+                                    class="form-control" 
+                                    id="inputPasswordConf" 
+                                    @blur="isValid"
+                                    @keydown.space.prevent=""
+                                    >
+                            </div>
+                            <!-- <div class="form-group form-check">
+                                <input type="checkbox" class="form-check-input" id="exampleCheck">
+                                <label class="form-check-label" for="exampleCheck">Check me out</label>
+                            </div> -->
+                            <button id="inputSubmit" type="submit" class="btn btn-primary">Sign in</button>
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -56,6 +99,7 @@ export default {
                passwordInp: false,
            },
            login: false,
+           inUp: true,
         }
     },
     watch: {
@@ -68,6 +112,48 @@ export default {
         }
     },
     methods: {
+        authSignUp(event) {
+            const email = event.target.querySelector("#inputEmail").value;
+            const password = event.target.querySelector("#inputPassword").value;
+            const passwordConfirm = event.target.querySelector("#inputPasswordConf").value;
+
+            console.log(email);
+
+
+            if (passwordConfirm != password) {
+                event.target.querySelector("#inputPasswordConf").classList.add("is-invalid");
+
+                return 0;
+            } else {
+                event.target.querySelector("#inputEmail").classList.add("is-valid");
+                event.target.querySelector("#inputPassword").classList.add("is-valid");
+                if (event.target.querySelector("#inputPasswordConf").classList.contains("is-invalid")) {
+                    event.target.querySelector("#inputPasswordConf").classList.remove("is-invalid");
+                }
+                event.target.querySelector("#inputPasswordConf").classList.add("is-valid");
+            }
+            
+            const apiKey = 'AIzaSyDTCjDnPrZ8Rdj5XAAWVrlxzvM0yCn_XOI';
+                fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        email, password,
+                        returnSecureToken: true
+                    }),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                })
+                    .then(response => response.json)
+                    .then(() => this.authWEmailAPassord(email, password))
+                    .then(token => {
+                        let date = new Date(Date.now() + 86400e3);
+                        
+                        this.setCookie("idToken", token, {expires: date});
+                    })
+                    .then(() => window.location.reload());
+
+        },
         authFormHandler(event) {
             
             const email = event.target.querySelector("#inputEmail").value;
@@ -170,6 +256,7 @@ export default {
         }
     }    
 }
+
 </script>
 
 <style scoped>
@@ -185,6 +272,10 @@ export default {
 
 .no-valid {
     background-color: rgba(250, 6, 6, 0.192);
+}
+
+.label-conf {
+   margin-top: 14px;
 }
 
 </style>
