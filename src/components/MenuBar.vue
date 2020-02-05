@@ -1,5 +1,5 @@
 <template>
-    <div class="">
+    <div>
         <div class="menu-bar navbar">
             <button v-if="!login" @click="() => inUp = true" type="button" class="btn btn-dark" data-toggle="modal" data-target="#exampleModalCenter">Login</button>
             <button v-if="!login" @click="() => inUp = false" type="button" class="btn btn-dark" data-toggle="modal" data-target="#exampleModalCenter">Sign up</button>
@@ -100,6 +100,9 @@ export default {
            },
            login: false,
            inUp: true,
+           showMenu: true,
+
+           startPosScroll: 0,
         }
     },
     watch: {
@@ -109,9 +112,27 @@ export default {
             } else {
                 document.getElementById("inputEmail").classList.remove("no-valid");
             }
-        }
+        },
+
     },
     methods: {
+        handlerHiddenMenuBar() {  // скрытие и появление навигации при скроллинге
+        //console.log(this.showMenu, this.startPosScroll, window.pageYOffset)
+            if (window.pageYOffset > this.startPosScroll) {               
+                if (this.showMenu == true) {              
+                    this.startPosScroll = window.pageYOffset;                    
+                    document.body.querySelector(".menu-bar").classList.add("menu-bar-hiddenUp");
+                    this.showMenu = false;
+                } 
+                              
+            } else {
+                if (this.showMenu == false || window.pageYOffset == 0) {
+                    this.startPosScroll = window.pageYOffset;
+                    document.body.querySelector(".menu-bar").classList.remove("menu-bar-hiddenUp");
+                    this.showMenu = true;
+                }
+            }
+        },
         authSignUp(event) {
             const email = event.target.querySelector("#inputEmail").value;
             const password = event.target.querySelector("#inputPassword").value;
@@ -254,12 +275,15 @@ export default {
         if (this.getCookie("idToken")) {
             this.login = true;
         }
+
+        window.addEventListener("scroll", this.handlerHiddenMenuBar); // создания слушателя скроллинга для скрытия\появления навигации
     }    
 }
 
 </script>
 
 <style scoped>
+
 
 .menu-bar {
     background-color: rgb(89, 173, 127);
@@ -268,6 +292,11 @@ export default {
     left: 0;
     height: 60px;
     width: 100%;
+    transition: top .5s;
+}
+
+.menu-bar-hiddenUp {
+    top: -60px;
 }
 
 .no-valid {
