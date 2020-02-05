@@ -87,6 +87,7 @@ export default {
                 .then(data => Object.values(data).length ? this.dataChat = Object.values(data) : data)
                 .catch(data => this.dataChat = Object.values(data))
                 .then(() => document.querySelector(".messages-block").scrollTo(0, document.querySelector(".messages-block").scrollHeight));
+                 console.log(this.autoreload);
         },
         focusOnTArea() {
             this.$refs.textarea.focus();
@@ -114,22 +115,24 @@ export default {
 
 .chat-block {
     margin: 50px auto;
-    background-color: rgb(236, 236, 236);
+    background-color: rgb(58, 73, 88);
     border: 4px solid #000;
     border-radius: 5px;
-    width: 800px;
+    max-width: 800px;
     height: 400px;
     display: grid;
-    grid-template-rows: 1fr 1fr 4fr 2fr
-
+    grid-template-rows: 1fr 1fr 4fr 2fr;
+    transition: max-width 1s;
 }
+
 
 h3 {
     margin: auto;
+    color:rgb(255, 255, 255)
 }
 
 .status-block {
-    background-color: rgb(209, 207, 207);
+    background-color: rgb(89, 173, 127);
     width: 100%;
     border-bottom: 1px solid #000;
     border-radius: 0 0 10px 0px;
@@ -171,7 +174,7 @@ h3 {
 }
 
 .input-block {
-    background-color: rgb(209, 207, 207);
+    background-color: rgb(89, 173, 127);
     width: 100%;
     border-top: 1px solid #000;
     border-radius: 0 10px 0 0;
@@ -180,13 +183,14 @@ h3 {
 .input-name {
     float: left;
     margin: 45px 0 45px 10px;
+    transition: visibility 1s;
 }
 
 .input-message {
     float: left;
     margin: 10px;
     resize: none;
-    width: 440px;
+    width: 55%;
     height: 130px;
 }
 
@@ -202,5 +206,58 @@ h3 {
 }
 
 
+@media (max-width: 810px) {
+    .chat-block {
+        max-width: 400px;
+        grid-template-rows: 1fr;
+    }
+
+    .input-block {
+        background-color: rgb(209, 207, 207);
+    }
+
+    
+    .input-name {
+        display: none;
+    }
+
+    .input-message {
+        margin: 10px;
+        width: 68%;
+        height: 130px;
+    }
+
+    .submit-message {
+        font-size: 20pt;
+        padding: 43px 5px;
+    }
+}
+
+@media (max-width: 410px) {
+    .chat-block {
+        max-width: none;
+    }
+
+    .input-block {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+
+    .input-message {
+        float: left;
+        margin: 10px;
+        width: 68%;
+        height: 75px;
+
+    }
+
+    .submit-message {
+        font-size: 15pt;
+        margin: 10px auto;
+        padding: 15px 5px;
+    }
+}
 
 </style>
