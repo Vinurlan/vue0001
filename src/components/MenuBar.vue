@@ -286,17 +286,21 @@ export default {
 
 
 .menu-bar {
+    z-index: 1;
     background-color: rgb(89, 173, 127);
     position: fixed;
     top: 0;
     left: 0;
     height: 60px;
     width: 100%;
-    transition: top .5s;
+    opacity: 100%;
+    transition-property: top, opacity;
+    transition-duration: .3s;
 }
 
 .menu-bar-hiddenUp {
     top: -60px;
+    opacity: 0%;
 }
 
 .no-valid {
